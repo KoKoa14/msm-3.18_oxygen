@@ -119,7 +119,7 @@ struct adv7533 {
 	struct pinctrl_state *pinctrl_state_suspend;
 	bool audio;
 	bool disable_gpios;
-	struct dss_module_power power_data;
+	struct mdss_module_power power_data;
 	bool cec_enabled;
 	bool is_power_on;
 	void *edid_data;
@@ -447,7 +447,7 @@ static int adv7533_program_i2c_addr(struct adv7533 *pdata)
 	return ret;
 }
 static void adv7533_parse_vreg_dt(struct device *dev,
-				struct dss_module_power *mp)
+				struct mdss_module_power *mp)
 {
 	int i, rc = 0;
 	int dt_vreg_total = 0;
@@ -463,7 +463,7 @@ static void adv7533_parse_vreg_dt(struct device *dev,
 		goto end;
 	}
 	mp->num_vreg = dt_vreg_total;
-	mp->vreg_config = devm_kzalloc(dev, sizeof(struct dss_vreg) *
+	mp->vreg_config = devm_kzalloc(dev, sizeof(struct mdss_vreg) *
 			dt_vreg_total, GFP_KERNEL);
 	if (!mp->vreg_config)
 		goto end;
@@ -1439,7 +1439,7 @@ static void adv7533_video_setup(struct adv7533 *pdata,
 static int adv7533_config_vreg(struct adv7533 *pdata, int enable)
 {
 	int rc = 0;
-	struct dss_module_power *power_data = NULL;
+	struct mdss_module_power *power_data = NULL;
 
 	if (!pdata) {
 		pr_err("invalid input\n");
@@ -1454,7 +1454,7 @@ static int adv7533_config_vreg(struct adv7533 *pdata, int enable)
 	}
 
 	if (enable) {
-		rc = msm_dss_config_vreg(&pdata->i2c_client->dev,
+		rc = msm_mdss_config_vreg(&pdata->i2c_client->dev,
 					power_data->vreg_config,
 					power_data->num_vreg, 1);
 		if (rc) {
@@ -1463,7 +1463,7 @@ static int adv7533_config_vreg(struct adv7533 *pdata, int enable)
 			goto exit;
 		}
 	} else {
-		rc = msm_dss_config_vreg(&pdata->i2c_client->dev,
+		rc = msm_mdss_config_vreg(&pdata->i2c_client->dev,
 					power_data->vreg_config,
 					power_data->num_vreg, 0);
 		if (rc) {
@@ -1480,7 +1480,7 @@ exit:
 static int adv7533_enable_vreg(struct adv7533 *pdata, int enable)
 {
 	int rc = 0;
-	struct dss_module_power *power_data = NULL;
+	struct mdss_module_power *power_data = NULL;
 
 	if (!pdata) {
 		pr_err("invalid input\n");
@@ -1495,7 +1495,7 @@ static int adv7533_enable_vreg(struct adv7533 *pdata, int enable)
 	}
 
 	if (enable) {
-		rc = msm_dss_enable_vreg(power_data->vreg_config,
+		rc = msm_mdss_enable_vreg(power_data->vreg_config,
 					power_data->num_vreg, 1);
 		if (rc) {
 			pr_err("%s: Failed to enable vreg. Err=%d\n",
@@ -1503,7 +1503,7 @@ static int adv7533_enable_vreg(struct adv7533 *pdata, int enable)
 			goto exit;
 		}
 	} else {
-		rc = msm_dss_enable_vreg(power_data->vreg_config,
+		rc = msm_mdss_enable_vreg(power_data->vreg_config,
 					power_data->num_vreg, 0);
 		if (rc) {
 			pr_err("%s: Failed to disable vreg. Err=%d\n",
